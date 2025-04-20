@@ -1,1 +1,98 @@
+/* css/styles.css */
 
+/* General styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Header styles */
+header h1 {
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+/* Card styles */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+}
+
+.card-title {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Metrics cards */
+.card .bg-light {
+    background-color: #f1f5f9 !important;
+    transition: transform 0.3s ease;
+}
+
+.card .bg-light:hover {
+    transform: translateY(-5px);
+}
+
+.card .bg-light h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #3498db;
+}
+
+/* Citation count */
+.citation-count {
+    color: #e74c3c !important;
+}
+
+/* h-index */
+.h-index {
+    color: #2ecc71 !important;
+}
+
+/* i10-index */
+.i10-index {
+    color: #9b59b6 !important;
+}
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin: 20px 0;
+}
+
+/* Links */
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Last updated text */
+.last-updated {
+    font-style: italic;
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.6;
+}
