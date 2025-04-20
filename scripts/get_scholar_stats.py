@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 from bs4 import BeautifulSoup
 import json
 import datetime
@@ -55,6 +56,7 @@ def get_html_content(url):
     
     try:
         logger.info(f"Fetching URL: {url}")
+        time.sleep(10)
         response = requests.get(
             url,
             proxies=proxies,
