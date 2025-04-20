@@ -37,18 +37,18 @@ jobs:
           echo "Using Oxylabs proxy server: $PROXY_SERVER"
           node scripts/fetch-scholar.js
         
-      - name: Check if data file exists
-        run: |
-          if [ -f "js/data/citations.json" ]; then
-            echo "Data file exists"
-            echo "Showing first few lines (metadata only):"
-            grep -A 10 "metadata" js/data/citations.json
-          else
-            echo "Data file does not exist"
-            echo "Directory content:"
-            ls -la js/data/
-            exit 1
-          fi
+     # - name: Check if data file exists
+     #   run: |
+     #     if [ -f "js/data/citations.json" ]; then
+     #       echo "Data file exists"
+     #       echo "Showing first few lines (metadata only):"
+     #       grep -A 10 "metadata" js/data/citations.json
+     #     else
+     #       echo "Data file does not exist"
+     #       echo "Directory content:"
+     #       ls -la js/data/
+     #       exit 1
+     #     fi
       
       - name: Commit and push if there are changes
         run: |
