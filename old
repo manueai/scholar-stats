@@ -1,0 +1,58 @@
+name: Update Scholar Stats
+
+on:
+  workflow_dispatch:     # Only allow manual trigger
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run stats collection
+        env:
+          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+          PROXY_PORT: ${{ secrets.PROXY_PORT }}
+          SCHOLAR_ID: ${{ secrets.SCHOLAR_ID }}
+        run: |
+          python scripts/get_scholar_stats.py
+
+      - name: Debug file existence
+        run: |
+          ls -la data/
+          cat data/scholar_stats.json || echo "File not found or empty"
+          
+      - name: Commit and push if changed
+        run: |
+          git config --local user.name 'GitHub Actions'
+          git config --local user.email 'actions@github.com'
+          git add data/scholar_stats.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git pull --rebase origin main && git push)
+     
+      #- name: Commit and push if changed
+      #  run: |
+      #    git config --global user.name 'GitHub Actions'
+      #    git config --global user.email 'actions@github.com'
+      #    git add data/scholar_stats.json
+      #    git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git push)
+
+      #- name: Commit and push if changed
+      #  run: |
+      #    git config --global user.name 'GitHub Actions'
+      #    git config --global user.email 'actions@github.com'
+      #    git add data/scholar_stats.json
+      #    git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git pull --rebase && git push)
