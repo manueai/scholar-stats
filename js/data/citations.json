@@ -1,1 +1,25 @@
-
+{
+  "metadata": {
+    "profileId": "YOUR_SCHOLAR_ID",
+    "name": "Dr. Jane Smith",
+    "institution": "University of Technology",
+    "fetchedAt": "2025-04-20T14:30:00.000Z"
+  },
+  "metrics": {
+    "totalCitations": 1248,
+    "h_index": 18,
+    "i10_index": 25
+  },
+  "citationsByYear": {
+    "2015": 45,
+    "2016": 78,
+    "2017": 120,
+    "2018": 156,
+    "2019": 210,
+    "2020": 245,
+    "2021": 178,
+    "2022": 120,
+    "2023": 72,
+    "2024": 24
+  }
+}
