@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: true  # ← keep GITHUB_TOKEN in your local git
           fetch-depth: 0            # ← grab full history so pull/rebase can work
