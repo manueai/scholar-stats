@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "profileId": "YOUR_SCHOLAR_ID",
-    "name": "Dr. Jane Smith",
-    "institution": "University of Technology",
+    "profileId": "SAMPLE_ID",
+    "name": "Academic Profile",
+    "institution": "Your Institution",
     "fetchedAt": "2025-04-20T14:30:00.000Z"
   },
   "metrics": {
