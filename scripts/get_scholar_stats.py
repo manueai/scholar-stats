@@ -56,7 +56,7 @@ def get_html_content(url):
     
     try:
         logger.info(f"Fetching URL: {url}")
-        time.sleep(10)
+        time.sleep(15)
         response = requests.get(
             url,
             proxies=proxies,
