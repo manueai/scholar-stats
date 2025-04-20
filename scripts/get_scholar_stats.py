@@ -5,6 +5,10 @@ import json
 import datetime
 from dotenv import load_dotenv
 import logging
+import urllib3
+
+# Disable SSL warnings (use with caution in production)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Set up logging
 logging.basicConfig(
@@ -57,7 +61,8 @@ def get_html_content(url):
             timeout=30,
             headers={
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
+            },
+            verify=False  # Disable SSL verification
         )
         
         response.raise_for_status()
