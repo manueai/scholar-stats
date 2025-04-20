@@ -1,1 +1,73 @@
-
+{
+  "profile": {
+    "name": "Example Scholar",
+    "affiliation": "Example University, Department of Computer Science",
+    "interests": [
+      "Machine Learning",
+      "Natural Language Processing",
+      "Computer Vision",
+      "Artificial Intelligence"
+    ]
+  },
+  "metrics": {
+    "citation_stats": {
+      "Citations": {
+        "all": "1250",
+        "since_2018": "980"
+      }
+    },
+    "indices": {
+      "h-index": {
+        "all": "18",
+        "since_2018": "15"
+      },
+      "i10-index": {
+        "all": "28",
+        "since_2018": "24"
+      }
+    },
+    "citation_history": [
+      {
+        "year": "2015",
+        "citations": 35
+      },
+      {
+        "year": "2016",
+        "citations": 62
+      },
+      {
+        "year": "2017",
+        "citations": 85
+      },
+      {
+        "year": "2018",
+        "citations": 120
+      },
+      {
+        "year": "2019",
+        "citations": 180
+      },
+      {
+        "year": "2020",
+        "citations": 210
+      },
+      {
+        "year": "2021",
+        "citations": 195
+      },
+      {
+        "year": "2022",
+        "citations": 238
+      },
+      {
+        "year": "2023",
+        "citations": 282
+      },
+      {
+        "year": "2024",
+        "citations": 310
+      }
+    ]
+  },
+  "updated_at": "2025-04-20 10:00:00"
+}
