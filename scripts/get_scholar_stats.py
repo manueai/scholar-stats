@@ -172,12 +172,39 @@ def get_scholar_stats(scholar_id):
 def save_json_data(data, filename="data/scholar_stats.json"):
     """Save data to JSON file"""
     # Ensure directory exists
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    directory = os.path.dirname(filename)
     
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    if not os.path.exists(directory):
+        logger.info(f"Creating directory: {directory}")
+        os.makedirs(directory, exist_ok=True)
+    else:
+        logger.info(f"Directory already exists: {directory}")
     
-    logger.info(f"Data saved to {filename}")
+    # Check if we can write to the location
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        logger.info(f"Data successfully saved to {filename}")
+    except Exception as e:
+        logger.error(f"Error saving data to {filename}: {e}")
+        raise
+    
+    # Verify file exists after saving
+    if os.path.exists(filename):
+        file_size = os.path.getsize(filename)
+        logger.info(f"Verified file exists: {filename} (Size: {file_size} bytes)")
+    else:
+        logger.error(f"File does not exist after saving: {filename}")
+        
+#def save_json_data(data, filename="data/scholar_stats.json"):
+#    """Save data to JSON file"""
+#    # Ensure directory exists
+#    os.makedirs(os.path.dirname(filename), exist_ok=True)
+#    
+#    with open(filename, 'w', encoding='utf-8') as f:
+#        json.dump(data, f, ensure_ascii=False, indent=2)
+#    
+#    logger.info(f"Data saved to {filename}")
 
 def main():
     """Main function to retrieve Google Scholar stats"""
