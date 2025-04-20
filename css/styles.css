@@ -20,7 +20,6 @@ header p {
 
 /* Card styles */
 .card {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: none;
     border-radius: 8px;
 }
@@ -30,35 +29,39 @@ header p {
     font-weight: 600;
 }
 
+/* Shadow for main card */
+.shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 /* Metrics cards */
-.card .bg-light {
+.metric-card {
     background-color: #f1f5f9 !important;
     transition: transform 0.3s ease;
 }
 
-.card .bg-light:hover {
+.metric-card:hover {
     transform: translateY(-5px);
 }
 
-.card .bg-light h3 {
+.metric-card h3 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #3498db;
 }
 
 /* Citation count */
 .citation-count {
-    color: #e74c3c !important;
+    color: #e74c3c;
 }
 
 /* h-index */
 .h-index {
-    color: #2ecc71 !important;
+    color: #2ecc71;
 }
 
 /* i10-index */
 .i10-index {
-    color: #9b59b6 !important;
+    color: #9b59b6;
 }
 
 /* Chart container */
@@ -95,4 +98,15 @@ footer {
 /* Loading state */
 .loading {
     opacity: 0.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metric-card h3 {
+        font-size: 2rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
 }
