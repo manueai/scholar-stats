@@ -55,8 +55,14 @@ jobs:
             exit 0
           fi
 
+          # Stash uncommitted changes to avoid conflicts
+          git stash --include-untracked
+
           # Rebase your new commit on top of anything that hit main meanwhile
           git pull --rebase origin main
+
+          # Apply stashed changes back
+          git stash pop || echo "No changes to unstash"
 
           # Commit and push
           git commit -m "ci: update scholar stats data"
