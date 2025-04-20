@@ -1,58 +1,64 @@
 name: Update Scholar Stats
 
 on:
-  workflow_dispatch:     # Only allow manual trigger
+  workflow_dispatch:  # manual trigger only
+
+permissions:
+  contents: write    # ← allow pushes
 
 jobs:
   update-stats:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v3
-        
+        with:
+          persist-credentials: true  # keep GITHUB_TOKEN in git config
+          fetch-depth: 0            # grab full history so pull/rebase can work
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
+
       - name: Run stats collection
         env:
           PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
           PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
-          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
-          PROXY_PORT: ${{ secrets.PROXY_PORT }}
-          SCHOLAR_ID: ${{ secrets.SCHOLAR_ID }}
+          PROXY_SERVER:   ${{ secrets.PROXY_SERVER }}
+          PROXY_PORT:     ${{ secrets.PROXY_PORT }}
+          SCHOLAR_ID:     ${{ secrets.SCHOLAR_ID }}
         run: |
           python scripts/get_scholar_stats.py
 
       - name: Debug file existence
         run: |
+          echo "--- files in data/ ---"
           ls -la data/
+          echo "--- contents of data/scholar_stats.json ---"
           cat data/scholar_stats.json || echo "File not found or empty"
-          
-      - name: Commit and push if changed
-        run: |
-          git config --local user.name 'GitHub Actions'
-          git config --local user.email 'actions@github.com'
-          git add data/scholar_stats.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git pull --rebase origin main && git push)
-     
-      #- name: Commit and push if changed
-      #  run: |
-      #    git config --global user.name 'GitHub Actions'
-      #    git config --global user.email 'actions@github.com'
-      #    git add data/scholar_stats.json
-      #    git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git push)
 
-      #- name: Commit and push if changed
-      #  run: |
-      #    git config --global user.name 'GitHub Actions'
-      #    git config --global user.email 'actions@github.com'
-      #    git add data/scholar_stats.json
-      #    git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git pull --rebase && git push)
+      - name: Commit & push if changed
+        run: |
+          git config user.name  "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Stage the updated JSON
+          git add data/scholar_stats.json
+
+          # Only continue if there’s something new to commit
+          if git diff --cached --quiet; then
+            echo "✅ No changes to commit"
+            exit 0
+          fi
+
+          # Commit, rebase onto latest main, then push
+          git commit -m "ci: update scholar stats data"
+          git pull --rebase origin main
+          git push origin HEAD:main
