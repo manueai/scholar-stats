@@ -1,1 +1,44 @@
+# .github/workflows/update-stats.yml
+name: Update Google Scholar Stats
 
+on:
+  schedule:
+    # Run weekly on Sunday at 12:00 UTC
+    - cron: '0 12 * * 0'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          
+      - name: Install dependencies
+        run: |
+          npm init -y
+          npm install axios cheerio
+      
+      - name: Fetch Google Scholar data
+        env:
+          SCHOLAR_ID: ${{ secrets.SCHOLAR_ID }}
+        run: node scripts/fetch-scholar.js
+      
+      - name: Commit and push if there are changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add js/data/citations.json
+          
+          # Only commit if there are changes
+          git diff --quiet && git diff --staged --quiet || (
+            git commit -m "Update Google Scholar statistics"
+            git push
+          )
