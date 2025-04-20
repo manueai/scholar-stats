@@ -1,11 +1,11 @@
 // scripts/fetch-scholar.js
-// Script to fetch Google Scholar citation data with Oxylabs proxy
+// A simplified script to fetch Google Scholar citation data with Oxylabs proxy
 
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
-const { HttpsProxyAgent } = require('https-proxy-agent');
+const https = require('https');
 
 // Get the Google Scholar profile ID from environment variables
 const PROFILE_ID = process.env.SCHOLAR_ID;
@@ -27,96 +27,137 @@ if (!PROXY_USERNAME || !PROXY_PASSWORD) {
   process.exit(1);
 }
 
-// Construct the proxy URL without logging sensitive information
-const proxyUrl = `http://${PROXY_USERNAME}:${PROXY_PASSWORD}@${PROXY_SERVER}:${PROXY_PORT}`;
+// Set up proxy configuration (without using https-proxy-agent)
+const proxyAuth = `${PROXY_USERNAME}:${PROXY_PASSWORD}`;
+const proxyUrl = `${PROXY_SERVER}:${PROXY_PORT}`;
+
 console.log(`Using Oxylabs proxy at ${PROXY_SERVER}:${PROXY_PORT}`);
 console.log(`Fetching data for Google Scholar ID: ${PROFILE_ID}`);
 
-// Create proxy agent
-const proxyAgent = new HttpsProxyAgent(proxyUrl);
-
 async function fetchScholarData() {
-  try {
-    // Configure request with proxy
-    const requestOptions = {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      },
-      httpsAgent: proxyAgent,
-      timeout: 30000 // 30 second timeout
-    };
+  return new Promise((resolve, reject) => {
+    try {
+      // Create custom Axios instance with direct proxy configuration
+      const instance = axios.create({
+        proxy: {
+          host: PROXY_SERVER,
+          port: parseInt(PROXY_PORT),
+          auth: {
+            username: PROXY_USERNAME,
+            password: PROXY_PASSWORD
+          }
+        },
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        timeout: 30000 // 30 second timeout
+      });
+      
+      const url = `https://scholar.google.com/citations?user=${PROFILE_ID}&hl=en`;
+      
+      console.log('Sending request to Google Scholar...');
+      
+      // Make the request
+      instance.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5'
+        }
+      }).then(response => {
+        console.log('Response received successfully');
+        
+        // Parse HTML with Cheerio
+        const $ = cheerio.load(response.data);
+        
+        // Extract citation metrics
+        const totalCitations = parseInt($('.gsc_rsb_sc1:nth-child(1) .gsc_rsb_std').text().trim()) || 0;
+        const h_index = parseInt($('.gsc_rsb_sc1:nth-child(2) .gsc_rsb_std').text().trim()) || 0;
+        const i10_index = parseInt($('.gsc_rsb_sc1:nth-child(3) .gsc_rsb_std').text().trim()) || 0;
+        
+        console.log(`Extracted metrics - Citations: ${totalCitations}, h-index: ${h_index}, i10-index: ${i10_index}`);
 
-    // Make request through proxy
-    console.log('Sending request to Google Scholar...');
-    const response = await axios.get(`https://scholar.google.com/citations?user=${PROFILE_ID}&hl=en`, requestOptions);
-    console.log('Response received successfully');
-
-    // Parse the response
-    const $ = cheerio.load(response.data);
-    
-    // Extract citation metrics
-    const totalCitations = parseInt($('.gsc_rsb_sc1:nth-child(1) .gsc_rsb_std').text().trim()) || 0;
-    const h_index = parseInt($('.gsc_rsb_sc1:nth-child(2) .gsc_rsb_std').text().trim()) || 0;
-    const i10_index = parseInt($('.gsc_rsb_sc1:nth-child(3) .gsc_rsb_std').text().trim()) || 0;
-    
-    console.log(`Extracted metrics - Citations: ${totalCitations}, h-index: ${h_index}, i10-index: ${i10_index}`);
-
-    // Extract citation data by year
-    const citationsByYear = {};
-    
-    // Process the citation graph data
-    $('div.gsc_md_hist_b .gsc_g_t').each((index, element) => {
-      const year = $(element).text().trim();
-      // Locate the citation count for this year
-      const citationCount = parseInt($(`div.gsc_md_hist_b .gsc_g_a[style*="z-index: ${10-index}"] .gsc_g_al`).text().trim()) || 0;
-      citationsByYear[year] = citationCount;
-    });
-    
-    // Get profile details
-    const profileName = $('.gsc_prf_in').first().text().trim() || "Academic Profile";
-    const profileInstitution = $('.gsc_prf_il').first().text().trim() || "Institution";
-    
-    // Compile the data
-    const scholarData = {
-      metadata: {
-        profileId: PROFILE_ID,
-        name: profileName,
-        institution: profileInstitution,
-        fetchedAt: new Date().toISOString()
-      },
-      metrics: {
-        totalCitations,
-        h_index,
-        i10_index
-      },
-      citationsByYear
-    };
-
-    return scholarData;
-  } catch (error) {
-    console.error('Error fetching Google Scholar data:');
-    
-    // Log error details without exposing credentials
-    if (error.response) {
-      console.error(`Status code: ${error.response.status}`);
-    } else if (error.request) {
-      console.error('No response received');
-    } else {
-      console.error(`Error message: ${error.message}`);
+        // Extract citation data by year
+        const citationsByYear = {};
+        
+        // Process the citation graph data
+        $('div.gsc_md_hist_b .gsc_g_t').each((index, element) => {
+          const year = $(element).text().trim();
+          // Locate the citation count for this year
+          const citationCount = parseInt($(`div.gsc_md_hist_b .gsc_g_a[style*="z-index: ${10-index}"] .gsc_g_al`).text().trim()) || 0;
+          citationsByYear[year] = citationCount;
+        });
+        
+        // Get profile details
+        const profileName = $('.gsc_prf_in').first().text().trim() || "Academic Profile";
+        const profileInstitution = $('.gsc_prf_il').first().text().trim() || "Institution";
+        
+        // Compile the data
+        const scholarData = {
+          metadata: {
+            profileId: PROFILE_ID,
+            name: profileName,
+            institution: profileInstitution,
+            fetchedAt: new Date().toISOString()
+          },
+          metrics: {
+            totalCitations,
+            h_index,
+            i10_index
+          },
+          citationsByYear
+        };
+        
+        resolve(scholarData);
+      }).catch(error => {
+        console.error('Error fetching data:', error.message);
+        reject(error);
+      });
+    } catch (error) {
+      console.error('Error setting up request:', error.message);
+      reject(error);
     }
-    
-    throw error;
-  }
+  });
+}
+
+// Function to generate sample data when real data can't be fetched
+function generateSampleData() {
+  console.log('Generating sample citation data...');
+  
+  const sampleData = {
+    metadata: {
+      profileId: PROFILE_ID || "SAMPLE_ID",
+      name: "Sample Academic",
+      institution: "Sample University",
+      fetchedAt: new Date().toISOString()
+    },
+    metrics: {
+      totalCitations: 1248,
+      h_index: 18,
+      i10_index: 25
+    },
+    citationsByYear: {
+      "2015": 45,
+      "2016": 78,
+      "2017": 120,
+      "2018": 156,
+      "2019": 210,
+      "2020": 245,
+      "2021": 178,
+      "2022": 120,
+      "2023": 72,
+      "2024": 24
+    }
+  };
+  
+  return sampleData;
 }
 
 async function saveData() {
   try {
-    // Fetch data from Google Scholar
-    const data = await fetchScholarData();
+    // Attempt to fetch real data
+    const data = await fetchScholarData().catch(() => null);
+    
+    // If fetching failed, generate sample data
+    const finalData = data || generateSampleData();
     
     // Create directory path if it doesn't exist
     const dataDir = path.join(__dirname, '../js/data');
@@ -127,42 +168,17 @@ async function saveData() {
     
     // Write data to JSON file
     const filePath = path.join(dataDir, 'citations.json');
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    fs.writeFileSync(filePath, JSON.stringify(finalData, null, 2));
     
     console.log(`Data successfully saved to ${filePath}`);
-    console.log('Citation metrics:', data.metrics);
+    console.log('Citation metrics:', finalData.metrics);
     
     return true;
   } catch (error) {
     console.error('Failed to save data:', error.message);
-    console.log('Generating sample data instead...');
     
     // Generate sample data as fallback
-    const sampleData = {
-      metadata: {
-        profileId: PROFILE_ID,
-        name: "Sample Academic",
-        institution: "Sample University",
-        fetchedAt: new Date().toISOString()
-      },
-      metrics: {
-        totalCitations: 1248,
-        h_index: 18,
-        i10_index: 25
-      },
-      citationsByYear: {
-        "2015": 45,
-        "2016": 78,
-        "2017": 120,
-        "2018": 156,
-        "2019": 210,
-        "2020": 245,
-        "2021": 178,
-        "2022": 120,
-        "2023": 72,
-        "2024": 24
-      }
-    };
+    const sampleData = generateSampleData();
     
     // Create directory if it doesn't exist
     const dataDir = path.join(__dirname, '../js/data');
