@@ -1,21 +1,22 @@
 name: Update Scholar Stats
 
 on:
-  workflow_dispatch:  # manual trigger only
+  workflow_dispatch:
 
+# 1) Allow pushes via GITHUB_TOKEN
 permissions:
-  contents: write    # ← allow pushes
+  contents: write
 
 jobs:
   update-stats:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: true  # keep GITHUB_TOKEN in git config
-          fetch-depth: 0            # grab full history so pull/rebase can work
+          persist-credentials: true  # ← let GITHUB_TOKEN push
+          fetch-depth: 0            # ← grab full history so pull/rebase works
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -34,31 +35,27 @@ jobs:
           PROXY_SERVER:   ${{ secrets.PROXY_SERVER }}
           PROXY_PORT:     ${{ secrets.PROXY_PORT }}
           SCHOLAR_ID:     ${{ secrets.SCHOLAR_ID }}
-        run: |
-          python scripts/get_scholar_stats.py
+        run: python scripts/get_scholar_stats.py
 
       - name: Debug file existence
         run: |
-          echo "--- files in data/ ---"
           ls -la data/
-          echo "--- contents of data/scholar_stats.json ---"
-          cat data/scholar_stats.json || echo "File not found or empty"
+          cat data/scholar_stats.json || echo "File not found"
 
       - name: Commit & push if changed
         run: |
           git config user.name  "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # Stage the updated JSON
           git add data/scholar_stats.json
 
-          # Only continue if there’s something new to commit
+          # exit if no changes
           if git diff --cached --quiet; then
             echo "✅ No changes to commit"
             exit 0
           fi
 
-          # Commit, rebase onto latest main, then push
+          # 2) rebase onto the very latest main, then push
           git commit -m "ci: update scholar stats data"
           git pull --rebase origin main
           git push origin HEAD:main
