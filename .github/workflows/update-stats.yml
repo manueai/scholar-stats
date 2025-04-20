@@ -2,9 +2,6 @@
 name: Update Google Scholar Stats
 
 on:
-  schedule:
-    # Run weekly on Sunday at 12:00 UTC
-    - cron: '0 12 * * 0'
   workflow_dispatch:
     # Allow manual triggering
 
