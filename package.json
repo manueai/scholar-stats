@@ -1,21 +1,16 @@
 {
   "name": "scholar-stats",
   "version": "1.0.0",
-  "description": "Google Scholar statistics visualization with Oxylabs proxy",
+  "description": "Google Scholar statistics visualization",
   "main": "scripts/fetch-scholar.js",
   "scripts": {
-    "fetch": "node scripts/fetch-scholar.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "fetch": "node scripts/fetch-scholar.js"
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "cheerio": "^1.0.0-rc.12",
-    "https-proxy-agent": "^5.0.1"
+    "axios": "^0.21.4",
+    "cheerio": "^1.0.0-rc.10"
   },
   "author": "",
   "license": "MIT",
-  "private": true,
-  "engines": {
-    "node": ">=14.0.0"
-  }
+  "private": true
 }
