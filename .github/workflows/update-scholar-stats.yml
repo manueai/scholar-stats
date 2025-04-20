@@ -30,6 +30,21 @@ jobs:
           SCHOLAR_ID: ${{ secrets.SCHOLAR_ID }}
         run: |
           python scripts/get_scholar_stats.py
+
+      - name: Debug file existence
+        run: |
+          ls -la data/
+          cat data/scholar_stats.json || echo "File not found or empty"
+          
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add data/scholar_stats.json
+          git status
+          git diff --staged
+          git commit -m "Update scholar stats data" || echo "No changes to commit"
+          git push || echo "No changes to push"
           
       #- name: Commit and push if changed
       #  run: |
@@ -38,9 +53,9 @@ jobs:
       #    git add data/scholar_stats.json
       #    git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git push)
 
-      - name: Commit and push if changed
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git add data/scholar_stats.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git pull --rebase && git push)
+      #- name: Commit and push if changed
+      #  run: |
+      #    git config --global user.name 'GitHub Actions'
+      #    git config --global user.email 'actions@github.com'
+      #    git add data/scholar_stats.json
+      #    git diff --quiet && git diff --staged --quiet || (git commit -m "Update scholar stats data" && git pull --rebase && git push)
