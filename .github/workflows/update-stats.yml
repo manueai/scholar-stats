@@ -1,9 +1,10 @@
 # .github/workflows/update-stats.yml
 name: Update Google Scholar Stats
 
+# Only run when manually triggered
 on:
   workflow_dispatch:
-    # Allow manual triggering
+    # No inputs needed as we're using repository secrets
 
 jobs:
   update-stats:
@@ -19,14 +20,35 @@ jobs:
           node-version: '16'
           
       - name: Install dependencies
-        run: |
-          npm init -y
-          npm install axios cheerio
+        run: npm install
       
-      - name: Fetch Google Scholar data
+      - name: Create data directory if it doesn't exist
+        run: mkdir -p js/data
+      
+      - name: Fetch Google Scholar data with Oxylabs proxy
         env:
           SCHOLAR_ID: ${{ secrets.SCHOLAR_ID }}
-        run: node scripts/fetch-scholar.js
+          PROXY_USERNAME: ${{ secrets.PROXY_USERNAME }}
+          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          PROXY_SERVER: ${{ secrets.PROXY_SERVER }}
+          PROXY_PORT: ${{ secrets.PROXY_PORT }}
+        run: |
+          echo "Using Google Scholar ID: $SCHOLAR_ID"
+          echo "Using Oxylabs proxy server: $PROXY_SERVER"
+          node scripts/fetch-scholar.js
+        
+      - name: Check if data file exists
+        run: |
+          if [ -f "js/data/citations.json" ]; then
+            echo "Data file exists"
+            echo "Showing first few lines (metadata only):"
+            grep -A 10 "metadata" js/data/citations.json
+          else
+            echo "Data file does not exist"
+            echo "Directory content:"
+            ls -la js/data/
+            exit 1
+          fi
       
       - name: Commit and push if there are changes
         run: |
