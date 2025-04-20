@@ -3,7 +3,6 @@ name: Update Scholar Stats
 on:
   workflow_dispatch:
 
-# 1) Allow pushes via GITHUB_TOKEN
 permissions:
   contents: write
 
@@ -12,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: true  # ← let GITHUB_TOKEN push
-          fetch-depth: 0            # ← grab full history so pull/rebase works
+          persist-credentials: true  # ← keep GITHUB_TOKEN in your local git
+          fetch-depth: 0            # ← grab full history so pull/rebase can work
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -40,22 +39,25 @@ jobs:
       - name: Debug file existence
         run: |
           ls -la data/
-          cat data/scholar_stats.json || echo "File not found"
+          cat data/scholar_stats.json || echo "File not found or empty"
 
       - name: Commit & push if changed
         run: |
           git config user.name  "GitHub Actions"
           git config user.email "actions@github.com"
 
+          # Stage your JSON
           git add data/scholar_stats.json
 
-          # exit if no changes
+          # If no changes staged, bail out
           if git diff --cached --quiet; then
             echo "✅ No changes to commit"
             exit 0
           fi
 
-          # 2) rebase onto the very latest main, then push
-          git commit -m "ci: update scholar stats data"
+          # Rebase your new commit on top of anything that hit main meanwhile
           git pull --rebase origin main
+
+          # Commit and push
+          git commit -m "ci: update scholar stats data"
           git push origin HEAD:main
