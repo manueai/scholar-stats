@@ -60,9 +60,11 @@ jobs:
             exit 0
           fi
           
-          # rebase main branch on top of origin/main
-          git pull --rebase origin main
-
+          # Fetch and merge the latest changes from the remote main branch
+          git fetch origin
+          git merge origin/main
+      
+          # Commit and push changes
           git commit -m "ci: update scholar stats data"
           git push origin main
       
