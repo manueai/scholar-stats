@@ -6,6 +6,9 @@ on:
 permissions:
   contents: write        # ← allow GITHUB_TOKEN to push
 
+- name: Clear Python cache
+  run: rm -rf ~/.pyenv
+
 jobs:
   update-stats:
     runs-on: ubuntu-22.04
