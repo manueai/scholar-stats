@@ -6,9 +6,6 @@ on:
 permissions:
   contents: write        # ← allow GITHUB_TOKEN to push
 
-- name: Clear Python cache
-  run: rm -rf ~/.pyenv
-
 jobs:
   update-stats:
     runs-on: ubuntu-22.04
@@ -20,7 +17,10 @@ jobs:
           ref: main              # ← explicitly switch to the main branch
           persist-credentials: true
           fetch-depth: 0
-
+          
+      - name: Verify Python version
+          run: python --version
+          
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
