@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholar Statistics</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="scholar-name">Scholar Statistics</h1>
+            <p id="scholar-affiliation"></p>
+        </header>
+        
+        <section class="metrics-container">
+            <h2>Citation Metrics</h2>
+            <div id="all-metrics" class="metrics-grid"></div>
+        </section>
+        
+        <section class="chart-container">
+            <h2>Citation History</h2>
+            <div class="chart-wrapper">
+                <canvas id="citation-chart"></canvas>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Last updated: <span id="last-updated">Loading...</span></p>
+            <p>Data from Google Scholar</p>
+        </footer>
+    </div>
+    
+    <script src="js/chart.js"></script>
+</body>
+</html>
