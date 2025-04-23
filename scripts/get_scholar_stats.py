@@ -144,10 +144,8 @@ def get_scholar_stats(scholar_id):
             citation_stats["i10-index"] = {'all': all_i10_index, 'since_recent': recent_i10_index}
             logger.info(f"Extracted i10-index: all={all_i10_index}, recent={recent_i10_index}")
         
+        # Store all metrics in citation_stats (not using indices anymore)
         metrics['citation_stats'] = citation_stats
-        
-        # Use empty indices to maintain structure compatibility
-        metrics['indices'] = {}
         
         # Citation history parsing specific to the HTML structure
         graph_data = []
@@ -348,7 +346,6 @@ def get_scholar_stats(scholar_id):
                     'h-index': {'all': 'N/A', 'since_recent': 'N/A'},
                     'i10-index': {'all': 'N/A', 'since_recent': 'N/A'}
                 },
-                'indices': {},
                 'citation_history': []
             },
             'updated_at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
