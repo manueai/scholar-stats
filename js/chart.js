@@ -1,7 +1,7 @@
 // Get references to DOM elements
 const scholarNameElement = document.getElementById('scholar-name');
 const scholarAffiliationElement = document.getElementById('scholar-affiliation');
-const allMetricsElement = document.getElementById('all-metrics');
+const metricsGridElement = document.getElementById('metrics-grid');
 const lastUpdatedElement = document.getElementById('last-updated');
 const citationChartElement = document.getElementById('citation-chart');
 
@@ -41,14 +41,9 @@ function displayScholarStats(data) {
         scholarAffiliationElement.textContent = data.profile.affiliation || '';
     }
     
-    // Display all metrics (both citation stats and indices)
-    if (data.metrics) {
-        allMetricsElement.innerHTML = '';
-        
-        // Display citation stats
-        if (data.metrics.citation_stats) {
-            displayMetricsSection(data.metrics.citation_stats);
-        }
+    // Display citation metrics
+    if (data.metrics && data.metrics.citation_stats) {
+        displayCitationMetrics(data.metrics.citation_stats);
     }
     
     // Display last updated timestamp
@@ -60,9 +55,13 @@ function displayScholarStats(data) {
     createCitationChart(data.metrics?.citation_history || []);
 }
 
-// Display metrics from a section (citation_stats or indices)
-function displayMetricsSection(metricsData) {
-    for (const [metric, values] of Object.entries(metricsData)) {
+// Display citation metrics
+function displayCitationMetrics(citationStats) {
+    // Clear any existing metrics
+    metricsGridElement.innerHTML = '';
+    
+    // Display each metric
+    for (const [metric, values] of Object.entries(citationStats)) {
         const metricItem = document.createElement('div');
         metricItem.className = 'metric-item';
         
@@ -86,7 +85,7 @@ function displayMetricsSection(metricsData) {
             <div class="sub-value">${sinceLabel}: ${sinceValue}</div>
         `;
         
-        allMetricsElement.appendChild(metricItem);
+        metricsGridElement.appendChild(metricItem);
     }
 }
 
