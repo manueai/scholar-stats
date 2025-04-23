@@ -14,15 +14,15 @@
     "citation_stats": {
       "Citations": {
         "all": "851",
-        "since_recent": "391"
+        "since_2020": "391"
       },
       "h-index": {
         "all": "20",
-        "since_recent": "11"
+        "since_2020": "11"
       },
       "i10-index": {
         "all": "28",
-        "since_recent": "12"
+        "since_2020": "12"
       }
     },
     "citation_history": [
@@ -120,5 +120,5 @@
       }
     ]
   },
-  "updated_at": "2025-04-23 09:38:58"
+  "updated_at": "2025-04-23 09:53:04"
 }
