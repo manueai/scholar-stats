@@ -118,29 +118,41 @@ def get_scholar_stats(scholar_id):
         # Extract all citation stats into a single object
         citation_stats = {}
         
-        # Extract the "since year" from the table header using the exact class
+        # Debug the table structure
+        citation_table = soup.select_one('table#gsc_rsb_st')
+        if citation_table:
+            logger.info("Found citation table")
+        else:
+            logger.warning("Could not find citation table with id='gsc_rsb_st'")
+            # Try to find any tables
+            all_tables = soup.select('table')
+            logger.info(f"Found {len(all_tables)} tables on the page")
+        
+        # Direct approach to extract the "since year" from table headers
         since_year = "recent"
-        since_header = soup.select('th.gsc_rsb_sth')
-        if since_header and len(since_header) >= 3:
-            since_text = since_header[2].text.strip()
+        table_headers = soup.select('table#gsc_rsb_st thead tr th')
+        logger.info(f"Found {len(table_headers)} table header cells")
+        
+        for i, header in enumerate(table_headers):
+            header_classes = header.get('class', [])
+            header_text = header.text.strip()
+            logger.info(f"Header {i+1}: class='{header_classes}', text='{header_text}'")
+            
+            # Look for the "Since YYYY" text in any header
+            if "Since" in header_text:
+                year_match = re.search(r'(\d{4})', header_text)
+                if year_match:
+                    since_year = year_match.group(1)
+                    logger.info(f"Extracted 'since year' from header {i+1}: {since_year}")
+        
+        # If direct approach fails, try looking at the third header specifically
+        if since_year == "recent" and len(table_headers) >= 3:
+            since_text = table_headers[2].text.strip()
             logger.info(f"Third header text: '{since_text}'")
             year_match = re.search(r'(\d{4})', since_text)
             if year_match:
                 since_year = year_match.group(1)
-                logger.info(f"Extracted 'since year' from header: {since_year}")
-            else:
-                logger.warning(f"Could not extract year from header text: '{since_text}'")
-        else:
-            logger.warning(f"Not enough header cells with class gsc_rsb_sth, found {len(since_header)}")
-            # Try alternative selector as fallback
-            alt_headers = soup.select('table#gsc_rsb_st th')
-            if alt_headers and len(alt_headers) >= 3:
-                since_text = alt_headers[2].text.strip()
-                logger.info(f"Alternative selector, third header text: '{since_text}'")
-                year_match = re.search(r'(\d{4})', since_text)
-                if year_match:
-                    since_year = year_match.group(1)
-                    logger.info(f"Extracted 'since year' from alternative header: {since_year}")
+                logger.info(f"Extracted 'since year' from third header: {since_year}")
         
         # Extract Citations (first row)
         citation_cells = soup.select('tr td.gsc_rsb_std')
@@ -357,7 +369,7 @@ def get_scholar_stats(scholar_id):
     except Exception as e:
         logger.error(f"Error parsing Google Scholar profile: {e}")
         
-        # Return minimal fallback data
+        # Return minimal fallback data with an explicit since year (2020 as default)
         return {
             'profile': {
                 'name': 'Scholar Profile',
