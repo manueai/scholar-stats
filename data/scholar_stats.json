@@ -1,145 +1,73 @@
 {
   "profile": {
-    "name": "Pierre Cahuc",
-    "affiliation": "Sciences Po,  Department of Economics (CNRS UMR8259)",
+    "name": "Example Scholar",
+    "affiliation": "Example University, Department of Computer Science",
     "interests": [
-      "Economics"
+      "Machine Learning",
+      "Natural Language Processing",
+      "Computer Vision",
+      "Artificial Intelligence"
     ]
   },
   "metrics": {
     "citation_stats": {
       "Citations": {
-        "all": "19131",
-        "since_recent": "5880"
-      },
-      "h-index": {
-        "all": "56",
-        "since_recent": "29"
-      },
-      "i10-index": {
-        "all": "149",
-        "since_recent": "69"
+        "all": "1250",
+        "since_2018": "980"
       }
     },
-    "indices": {},
+    "indices": {
+      "h-index": {
+        "all": "18",
+        "since_2018": "15"
+      },
+      "i10-index": {
+        "all": "28",
+        "since_2018": "24"
+      }
+    },
     "citation_history": [
       {
-        "year": "1997",
-        "citations": 48
-      },
-      {
-        "year": "1998",
-        "citations": 53
-      },
-      {
-        "year": "1999",
-        "citations": 102
-      },
-      {
-        "year": "2000",
-        "citations": 111
-      },
-      {
-        "year": "2001",
-        "citations": 96
-      },
-      {
-        "year": "2002",
-        "citations": 131
-      },
-      {
-        "year": "2003",
-        "citations": 185
-      },
-      {
-        "year": "2004",
-        "citations": 193
-      },
-      {
-        "year": "2005",
-        "citations": 229
-      },
-      {
-        "year": "2006",
-        "citations": 396
-      },
-      {
-        "year": "2007",
-        "citations": 462
-      },
-      {
-        "year": "2008",
-        "citations": 508
-      },
-      {
-        "year": "2009",
-        "citations": 617
-      },
-      {
-        "year": "2010",
-        "citations": 733
-      },
-      {
-        "year": "2011",
-        "citations": 764
-      },
-      {
-        "year": "2012",
-        "citations": 802
-      },
-      {
-        "year": "2013",
-        "citations": 956
-      },
-      {
-        "year": "2014",
-        "citations": 939
-      },
-      {
         "year": "2015",
-        "citations": 1106
+        "citations": 35
       },
       {
         "year": "2016",
-        "citations": 1087
+        "citations": 62
       },
       {
         "year": "2017",
-        "citations": 1033
+        "citations": 85
       },
       {
         "year": "2018",
-        "citations": 1098
+        "citations": 120
       },
       {
         "year": "2019",
-        "citations": 1005
+        "citations": 180
       },
       {
         "year": "2020",
-        "citations": 1050
+        "citations": 210
       },
       {
         "year": "2021",
-        "citations": 1190
+        "citations": 195
       },
       {
         "year": "2022",
-        "citations": 1172
+        "citations": 238
       },
       {
         "year": "2023",
-        "citations": 1065
+        "citations": 282
       },
       {
         "year": "2024",
-        "citations": 1107
-      },
-      {
-        "year": "2025",
-        "citations": 285
+        "citations": 310
       }
     ]
   },
-  "updated_at": "2025-04-23 04:21:29"
+  "updated_at": "2025-04-20 10:00:00"
 }
