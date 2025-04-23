@@ -125,7 +125,7 @@ def get_scholar_stats(scholar_id):
         
         # h-index and i10-index
         indices = {}
-        indices_table = soup.select('table.gsc_rsb_st')
+        indices_table = soup.select('table.gsc_rsb_std')
         if len(indices_table) > 1:
             rows = indices_table[1].select('tr')
             for row in rows[1:]:  # Skip the header row
