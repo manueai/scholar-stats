@@ -42,7 +42,7 @@ header h1 {
 
 .metrics-container h2 {
     color: #1a73e8;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     font-size: 1.3rem;
     text-align: center;
 }
@@ -57,10 +57,18 @@ header h1 {
 .metric-item {
     text-align: center;
     min-width: 150px;
-    padding: 0.75rem;
-    border-radius: 6px;
+    flex: 1;
+    max-width: 200px;
+    padding: 1rem;
+    border-radius: 8px;
     background-color: #f8f9fa;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .metric-label {
@@ -71,15 +79,15 @@ header h1 {
 }
 
 .metric-value {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #1a73e8;
+    margin-bottom: 0.5rem;
 }
 
 .sub-value {
     font-size: 0.9rem;
     color: #5f6368;
-    margin-top: 0.25rem;
 }
 
 /* Chart container */
@@ -93,7 +101,7 @@ header h1 {
 
 .chart-container h2 {
     color: #1a73e8;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     font-size: 1.3rem;
     text-align: center;
 }
@@ -111,6 +119,21 @@ footer {
     font-size: 0.9rem;
 }
 
+/* Error message */
+.error-message {
+    background-color: #fce8e8;
+    color: #d32f2f;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.error-message h2 {
+    color: #b71c1c;
+    margin-bottom: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .container {
@@ -124,7 +147,7 @@ footer {
     
     .metric-item {
         width: 100%;
-        max-width: 300px;
+        max-width: 250px;
     }
     
     .chart-wrapper {
