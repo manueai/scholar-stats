@@ -65,13 +65,13 @@ function displayCitationMetrics(citationStats) {
         const metricItem = document.createElement('div');
         metricItem.className = 'metric-item';
         
-        // Determine if the "since" key contains a year or just "recent"
+        // Find the "since" entry in the values and extract the year
         let sinceLabel = 'Since recent';
         let sinceValue = '';
         
-        // Find the "since" entry in the values
         const sinceKey = Object.keys(values).find(key => key.startsWith('since_'));
         if (sinceKey) {
+            // Extract year from the key (e.g., "since_2020" becomes "2020")
             const yearMatch = sinceKey.match(/since_(\d{4})/);
             if (yearMatch) {
                 sinceLabel = `Since ${yearMatch[1]}`;
