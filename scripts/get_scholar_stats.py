@@ -118,13 +118,27 @@ def get_scholar_stats(scholar_id):
         # Extract all citation stats into a single object
         citation_stats = {}
         
+        # Extract the "since year" from the table header
+        since_year = "recent"
+        since_header = soup.select('table.gsc_rsb_st th')
+        if since_header and len(since_header) >= 3:
+            since_text = since_header[2].text.strip()
+            year_match = re.search(r'(\d{4})', since_text)
+            if year_match:
+                since_year = year_match.group(1)
+                logger.info(f"Extracted 'since year' from header: {since_year}")
+            else:
+                logger.warning(f"Could not extract year from header text: {since_text}")
+        else:
+            logger.warning("Could not find table headers for extracting 'since year'")
+        
         # Extract Citations (first row)
         citation_cells = soup.select('tr td.gsc_rsb_std')
         if len(citation_cells) >= 2:
             all_citations = citation_cells[0].text.strip()
             recent_citations = citation_cells[1].text.strip()
-            citation_stats["Citations"] = {'all': all_citations, 'since_recent': recent_citations}
-            logger.info(f"Extracted citations: all={all_citations}, recent={recent_citations}")
+            citation_stats["Citations"] = {'all': all_citations, f'since_{since_year}': recent_citations}
+            logger.info(f"Extracted citations: all={all_citations}, since_{since_year}={recent_citations}")
         else:
             logger.warning(f"Could not find citation cells, found {len(citation_cells)} cells")
         
@@ -133,16 +147,16 @@ def get_scholar_stats(scholar_id):
         if len(h_index_cells) >= 2:
             all_h_index = h_index_cells[0].text.strip()
             recent_h_index = h_index_cells[1].text.strip()
-            citation_stats["h-index"] = {'all': all_h_index, 'since_recent': recent_h_index}
-            logger.info(f"Extracted h-index: all={all_h_index}, recent={recent_h_index}")
+            citation_stats["h-index"] = {'all': all_h_index, f'since_{since_year}': recent_h_index}
+            logger.info(f"Extracted h-index: all={all_h_index}, since_{since_year}={recent_h_index}")
         
         # Extract i10-index (third row)
         i10_index_cells = soup.select('tr:nth-of-type(3) td.gsc_rsb_std')
         if len(i10_index_cells) >= 2:
             all_i10_index = i10_index_cells[0].text.strip()
             recent_i10_index = i10_index_cells[1].text.strip()
-            citation_stats["i10-index"] = {'all': all_i10_index, 'since_recent': recent_i10_index}
-            logger.info(f"Extracted i10-index: all={all_i10_index}, recent={recent_i10_index}")
+            citation_stats["i10-index"] = {'all': all_i10_index, f'since_{since_year}': recent_i10_index}
+            logger.info(f"Extracted i10-index: all={all_i10_index}, since_{since_year}={recent_i10_index}")
         
         # Store all metrics in citation_stats (not using indices anymore)
         metrics['citation_stats'] = citation_stats
@@ -342,9 +356,9 @@ def get_scholar_stats(scholar_id):
             },
             'metrics': {
                 'citation_stats': {
-                    'Citations': {'all': 'N/A', 'since_recent': 'N/A'},
-                    'h-index': {'all': 'N/A', 'since_recent': 'N/A'},
-                    'i10-index': {'all': 'N/A', 'since_recent': 'N/A'}
+                    'Citations': {'all': 'N/A', 'since_2020': 'N/A'},
+                    'h-index': {'all': 'N/A', 'since_2020': 'N/A'},
+                    'i10-index': {'all': 'N/A', 'since_2020': 'N/A'}
                 },
                 'citation_history': []
             },
