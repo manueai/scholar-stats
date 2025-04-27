@@ -13,8 +13,8 @@
   "metrics": {
     "citation_stats": {
       "Citations": {
-        "all": "851",
-        "since_2020": "391"
+        "all": "852",
+        "since_2020": "392"
       },
       "h-index": {
         "all": "20",
@@ -108,17 +108,17 @@
       },
       {
         "year": "2023",
-        "citations": 100
+        "citations": 101
       },
       {
         "year": "2024",
-        "citations": 137
+        "citations": 135
       },
       {
         "year": "2025",
-        "citations": 52
+        "citations": 54
       }
     ]
   },
-  "updated_at": "2025-04-23 11:48:19"
+  "updated_at": "2025-04-27 05:58:21"
 }
