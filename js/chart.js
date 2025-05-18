@@ -39,7 +39,9 @@ function displayScholarStats(data) {
     // Display profile information
     if (data.profile) {
         scholarNameElement.textContent = data.profile.name || 'Scholar Statistics';
-        scholarInterestsElement.textContent = data.profile.interests || '';
+        scholarInterestsElement.textContent = Array.isArray(data.profile.interests)
+            ? data.profile.interests.join(', ')
+            : (data.profile.interests || '');
     }
     
     // Display citation metrics
