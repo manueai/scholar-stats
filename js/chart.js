@@ -1,6 +1,7 @@
 // Get references to DOM elements
 const scholarNameElement = document.getElementById('scholar-name');
 const scholarAffiliationElement = document.getElementById('scholar-affiliation');
+const scholarInterestElement = document.getElementById('scholar-interests');
 const metricsGridElement = document.getElementById('metrics-grid');
 const lastUpdatedElement = document.getElementById('last-updated');
 const citationChartElement = document.getElementById('citation-chart');
@@ -38,7 +39,7 @@ function displayScholarStats(data) {
     // Display profile information
     if (data.profile) {
         scholarNameElement.textContent = data.profile.name || 'Scholar Statistics';
-        scholarAffiliationElement.textContent = data.profile.affiliation || '';
+        scholarInterestsElement.textContent = data.profile.interests || '';
     }
     
     // Display citation metrics
