@@ -1,7 +1,7 @@
 // Get references to DOM elements
 const scholarNameElement = document.getElementById('scholar-name');
 const scholarAffiliationElement = document.getElementById('scholar-affiliation');
-const scholarInterestElement = document.getElementById('scholar-interests');
+const scholarInterestsElement = document.getElementById('scholar-interests');
 const metricsGridElement = document.getElementById('metrics-grid');
 const lastUpdatedElement = document.getElementById('last-updated');
 const citationChartElement = document.getElementById('citation-chart');
