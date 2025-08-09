@@ -20,8 +20,8 @@ def load_environment_variables():
     
     # Required environment variables for Oxylabs API
     required_vars = [
-        'OXYLABS_USERNAME',  # Your Oxylabs username
-        'OXYLABS_PASSWORD',  # Your Oxylabs password
+        'PROXY_USERNAME',  # Your Oxylabs username
+        'PROXY_PASSWORD',  # Your Oxylabs password
         'SCHOLAR_ID'         # Google Scholar ID
     ]
     
