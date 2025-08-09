@@ -89,8 +89,8 @@ def get_scholar_stats(scholar_id):
     # Get HTML content via Oxylabs
     html = get_scholar_html_via_oxylabs(
         scholar_id, 
-        env_vars['OXYLABS_USERNAME'], 
-        env_vars['OXYLABS_PASSWORD']
+        env_vars['PROXY_USERNAME'], 
+        env_vars['PROXY_PASSWORD']
     )
     
     if not html:
