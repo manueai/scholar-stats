@@ -1,0 +1,124 @@
+{
+  "profile": {
+    "name": "Emmanuelle Walkowiak",
+    "affiliation": "RMIT",
+    "interests": [
+      "Innovation",
+      "Digital transformation",
+      "Labour",
+      "Organisation",
+      "Social Economics"
+    ]
+  },
+  "metrics": {
+    "citation_stats": {
+      "Citations": {
+        "all": "861",
+        "since_2020": "399"
+      },
+      "h-index": {
+        "all": "20",
+        "since_2020": "11"
+      },
+      "i10-index": {
+        "all": "28",
+        "since_2020": "12"
+      }
+    },
+    "citation_history": [
+      {
+        "year": "2003",
+        "citations": 5
+      },
+      {
+        "year": "2004",
+        "citations": 9
+      },
+      {
+        "year": "2005",
+        "citations": 14
+      },
+      {
+        "year": "2006",
+        "citations": 16
+      },
+      {
+        "year": "2007",
+        "citations": 29
+      },
+      {
+        "year": "2008",
+        "citations": 23
+      },
+      {
+        "year": "2009",
+        "citations": 52
+      },
+      {
+        "year": "2010",
+        "citations": 46
+      },
+      {
+        "year": "2011",
+        "citations": 31
+      },
+      {
+        "year": "2012",
+        "citations": 38
+      },
+      {
+        "year": "2013",
+        "citations": 27
+      },
+      {
+        "year": "2014",
+        "citations": 30
+      },
+      {
+        "year": "2015",
+        "citations": 26
+      },
+      {
+        "year": "2016",
+        "citations": 30
+      },
+      {
+        "year": "2017",
+        "citations": 28
+      },
+      {
+        "year": "2018",
+        "citations": 28
+      },
+      {
+        "year": "2019",
+        "citations": 14
+      },
+      {
+        "year": "2020",
+        "citations": 28
+      },
+      {
+        "year": "2021",
+        "citations": 33
+      },
+      {
+        "year": "2022",
+        "citations": 41
+      },
+      {
+        "year": "2023",
+        "citations": 100
+      },
+      {
+        "year": "2024",
+        "citations": 138
+      },
+      {
+        "year": "2025",
+        "citations": 58
+      }
+    ]
+  },
+  "updated_at": "2025-05-12 09:24:07"
+}
