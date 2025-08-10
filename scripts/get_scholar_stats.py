@@ -7,7 +7,6 @@ import re
 from dotenv import load_dotenv
 import logging
 import urllib3
-import certifi
 
 # Disable SSL warnings (use with caution in production)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -41,7 +40,7 @@ def load_environment_variables():
     return {var: os.getenv(var) for var in required_vars}
 
 def get_html_content(url):
-    """Fetch HTML content using Oxylabs proxy"""
+    """Fetch HTML content using Oxylabs proxy with Session"""
     env_vars = load_environment_variables()
     
     username = env_vars['PROXY_USERNAME']
@@ -52,27 +51,35 @@ def get_html_content(url):
     proxy = f"{proxy_server}:{proxy_port}"
     
     proxies = {
-        "https": f"https://user-{username}:{password}@{proxy}"
+        "https": f"https://user-{username}:{password}@{proxy}",
+        "http": f"http://user-{username}:{password}@{proxy}"
     }
+    
+    # Create a session object for better connection handling
+    session = requests.Session()
+    
+    # Configure session
+    session.proxies.update(proxies)
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    })
     
     try:
         logger.info(f"Fetching URL: {url}")
-        response = requests.get(
-            url,
-            proxies=proxies,
-            timeout=30,
-            headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            verify=certifi.where()  # Use certifi for SSL verification
-        )
         
+        # First try with SSL verification disabled
+        session.verify = False
+        response = session.get(url, timeout=30)
         response.raise_for_status()
+        logger.info("Successfully fetched with session")
         return response.text
         
     except requests.exceptions.RequestException as e:
         logger.error(f"Error fetching URL {url}: {e}")
         return None
+    finally:
+        # Always close the session
+        session.close()
 
 def get_scholar_stats(scholar_id):
     """Get statistics for a Google Scholar profile"""
