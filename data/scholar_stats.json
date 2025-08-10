@@ -1,117 +1,125 @@
 {
   "profile": {
-    "name": "Luc Behaghel",
-    "affiliation": "Associate professor, Paris School of Economics, INRA",
+    "name": "Emmanuelle Walkowiak",
+    "affiliation": "RMIT",
     "interests": [
-      "Economics"
+      "Innovation",
+      "Digital transformation",
+      "Labour",
+      "Organisation",
+      "Social Economics"
     ]
   },
   "metrics": {
     "citation_stats": {
       "Citations": {
-        "all": "2216",
-        "since_2020": "1038"
+        "all": "906",
+        "since_2020": "443"
       },
       "h-index": {
-        "all": "23",
-        "since_2020": "14"
+        "all": "20",
+        "since_2020": "11"
       },
       "i10-index": {
-        "all": "32",
-        "since_2020": "18"
+        "all": "28",
+        "since_2020": "12"
       }
     },
     "citation_history": [
       {
+        "year": "2003",
+        "citations": 5
+      },
+      {
         "year": "2004",
-        "citations": 6
+        "citations": 9
       },
       {
         "year": "2005",
-        "citations": 19
+        "citations": 13
       },
       {
         "year": "2006",
-        "citations": 33
+        "citations": 15
       },
       {
         "year": "2007",
-        "citations": 40
-      },
-      {
-        "year": "2008",
-        "citations": 44
-      },
-      {
-        "year": "2009",
         "citations": 29
       },
       {
+        "year": "2008",
+        "citations": 23
+      },
+      {
+        "year": "2009",
+        "citations": 52
+      },
+      {
         "year": "2010",
-        "citations": 39
+        "citations": 46
       },
       {
         "year": "2011",
-        "citations": 51
+        "citations": 32
       },
       {
         "year": "2012",
-        "citations": 47
+        "citations": 38
       },
       {
         "year": "2013",
-        "citations": 70
+        "citations": 26
       },
       {
         "year": "2014",
-        "citations": 97
+        "citations": 30
       },
       {
         "year": "2015",
-        "citations": 100
+        "citations": 26
       },
       {
         "year": "2016",
-        "citations": 131
+        "citations": 31
       },
       {
         "year": "2017",
-        "citations": 139
+        "citations": 27
       },
       {
         "year": "2018",
-        "citations": 126
+        "citations": 28
       },
       {
         "year": "2019",
-        "citations": 143
+        "citations": 14
       },
       {
         "year": "2020",
-        "citations": 152
+        "citations": 28
       },
       {
         "year": "2021",
-        "citations": 156
+        "citations": 33
       },
       {
         "year": "2022",
-        "citations": 178
+        "citations": 43
       },
       {
         "year": "2023",
-        "citations": 197
+        "citations": 100
       },
       {
         "year": "2024",
-        "citations": 214
+        "citations": 133
       },
       {
         "year": "2025",
-        "citations": 137
+        "citations": 106
       }
     ]
   },
-  "updated_at": "2025-08-10 02:26:14",
+  "updated_at": "2025-08-10 02:29:33",
   "source": "direct_connection"
 }
