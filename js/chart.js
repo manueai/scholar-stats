@@ -1,3 +1,6 @@
+// Configuration: Change this variable to set the starting year for the histogram
+const CHART_START_YEAR = 2020;  // Change this to any year you want (e.g., 2000, 2010, 2015, etc.)
+
 // Get references to DOM elements
 const scholarNameElement = document.getElementById('scholar-name');
 const scholarAffiliationElement = document.getElementById('scholar-affiliation');
@@ -54,7 +57,7 @@ function displayScholarStats(data) {
         lastUpdatedElement.textContent = data.updated_at;
     }
     
-    // Create citation history chart (filtered from 2000 onwards)
+    // Create citation history chart (filtered from CHART_START_YEAR onwards)
     createCitationChart(data.metrics?.citation_history || []);
 }
 
@@ -92,47 +95,55 @@ function displayCitationMetrics(citationStats) {
     }
 }
 
-// Create the citation history chart (filtered from 2000 onwards)
+// Create the citation history chart (filtered from CHART_START_YEAR onwards)
 function createCitationChart(historyData) {
     if (!historyData || historyData.length === 0) {
         console.log('No citation history data available');
         return;
     }
     
-    // Filter data to only include years from 2000 onwards
+    console.log(`Total citation data points received: ${historyData.length}`);
+    console.log(`Chart configured to display from year: ${CHART_START_YEAR}`);
+    
+    // Filter data to only DISPLAY years from CHART_START_YEAR onwards
     const filteredData = historyData.filter(item => {
         const year = parseInt(item.year);
         if (isNaN(year)) {
             console.warn(`Invalid year format: ${item.year}`);
             return false;
         }
-        return year >= 2000;
+        const include = year >= CHART_START_YEAR;
+        if (!include) {
+            console.log(`Filtering out year ${year} from display (before ${CHART_START_YEAR})`);
+        }
+        return include;
     });
     
-    console.log(`Filtered citation data: ${historyData.length} total years, ${filteredData.length} from 2000 onwards`);
+    console.log(`Displaying ${filteredData.length} years from ${CHART_START_YEAR} onwards (${historyData.length - filteredData.length} years hidden)`);
     
     if (filteredData.length === 0) {
-        console.log('No citation data from 2000 onwards');
+        console.log(`No citation data from ${CHART_START_YEAR} onwards to display`);
         // Display a message on the chart area
-        citationChartElement.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No citation data available from 2000 onwards</p>';
+        citationChartElement.innerHTML = `<p style="text-align: center; color: #666; padding: 20px;">No citation data available from ${CHART_START_YEAR} onwards</p>`;
         return;
     }
     
-    // Sort data by year
+    // Sort filtered data by year
     filteredData.sort((a, b) => parseInt(a.year) - parseInt(b.year));
     
-    // Extract labels and data
+    // Extract labels and data for display
     const labels = filteredData.map(item => item.year);
     const citationData = filteredData.map(item => item.citations);
     
-    console.log('Chart data:', { labels, citationData });
+    console.log(`Chart displaying years: ${labels.join(', ')}`);
+    console.log(`Chart displaying citation counts: ${citationData.join(', ')}`);
     
     // Destroy previous chart if it exists
     if (citationChart) {
         citationChart.destroy();
     }
     
-    // Create the chart
+    // Create the chart with filtered data
     citationChart = new Chart(citationChartElement, {
         type: 'bar',
         data: {
@@ -159,7 +170,7 @@ function createCitationChart(historyData) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Year (from 2000)'
+                        text: `Year (from ${CHART_START_YEAR})`
                     }
                 }
             },
@@ -176,7 +187,7 @@ function createCitationChart(historyData) {
                 },
                 title: {
                     display: true,
-                    text: 'Citation History (2000 onwards)',
+                    text: `Citation History (${CHART_START_YEAR} onwards)`,
                     font: {
                         size: 14
                     }
