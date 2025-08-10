@@ -34,91 +34,136 @@ def load_environment_variables():
     return {var: os.getenv(var) for var in required_vars}
 
 def get_html_content(url):
-    """Fetch HTML content with multiple fallback strategies (no proxy required)"""
+    """Fetch HTML content with enhanced anti-detection strategies"""
     
-    # Strategy 1: Try direct connection first (GitHub Actions IPs often work)
+    # Strategy 1: Enhanced direct connection with better headers
     try:
-        logger.info("Attempting direct connection (no proxy)")
-        response = requests.get(
-            url,
-            timeout=30,
-            headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            verify=False
-        )
+        logger.info("Attempting enhanced direct connection")
+        
+        # More realistic browser headers
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': '1',
+            'Connection': 'keep-alive'
+        }
+        
+        import time
+        time.sleep(2)  # Initial delay
+        
+        response = requests.get(url, headers=headers, timeout=30, verify=False)
+        
+        if response.status_code == 403:
+            logger.warning(f"403 Forbidden error - Google Scholar is blocking the request")
+            logger.info("This usually means: rate limiting, bot detection, or geographic restrictions")
+        
         response.raise_for_status()
-        logger.info("✅ Direct connection successful!")
+        logger.info("✅ Enhanced direct connection successful!")
         return response.text
         
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 403:
+            logger.error("❌ 403 Forbidden - Google Scholar blocked the request")
+            logger.info("Possible causes: rate limiting, bot detection, or IP restrictions")
+        else:
+            logger.warning(f"HTTP error {e.response.status_code}: {e}")
     except Exception as e:
-        logger.warning(f"Direct connection failed: {e}")
+        logger.warning(f"Enhanced direct connection failed: {e}")
     
-    # Strategy 2: Try with different User-Agents and delays
-    user_agents = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
-        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-    ]
-    
-    for i, ua in enumerate(user_agents):
-        try:
-            logger.info(f"Trying User-Agent {i+1}/{len(user_agents)}: {ua[:50]}...")
-            import time
-            import random
-            time.sleep(random.uniform(2, 5))  # Random delay between attempts
-            
-            response = requests.get(
-                url,
-                timeout=30,
-                headers={
-                    'User-Agent': ua,
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Accept-Encoding': 'gzip, deflate',
-                    'Connection': 'keep-alive',
-                },
-                verify=False
-            )
-            response.raise_for_status()
-            logger.info(f"✅ User-Agent strategy {i+1} successful!")
-            return response.text
-            
-        except Exception as e:
-            logger.warning(f"User-Agent {i+1} failed: {e}")
-            continue
-    
-    # Strategy 3: Try with session and cookies
+    # Strategy 2: Try with longer delays and different approach
     try:
-        logger.info("Trying with session and cookies...")
+        logger.info("Trying with longer delays and session approach...")
+        
         session = requests.Session()
+        
+        # Set more realistic headers
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
             'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
         })
         session.verify = False
         
-        # First request to get session cookies
+        # First, visit the main Scholar page to establish session
+        logger.info("Establishing session with Google Scholar...")
         session.get('https://scholar.google.com/', timeout=30)
-        import time
-        time.sleep(2)
         
-        # Second request for actual data
+        # Wait longer between requests
+        import time
+        import random
+        wait_time = random.uniform(5, 10)
+        logger.info(f"Waiting {wait_time:.1f} seconds before main request...")
+        time.sleep(wait_time)
+        
+        # Now try the actual request
         response = session.get(url, timeout=30)
+        
+        if response.status_code == 403:
+            logger.error("❌ Still getting 403 with session approach")
+            session.close()
+            return None
+        
         response.raise_for_status()
         session.close()
-        logger.info("✅ Session with cookies successful!")
+        logger.info("✅ Session approach successful!")
         return response.text
         
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 403:
+            logger.error("❌ 403 Forbidden persists with session approach")
+        logger.warning(f"Session approach failed: {e}")
     except Exception as e:
         logger.warning(f"Session approach failed: {e}")
     
-    logger.error("❌ All connection strategies failed")
+    # Strategy 3: Try academic/research user agent
+    try:
+        logger.info("Trying with academic user agent...")
+        
+        import time
+        time.sleep(random.uniform(10, 15))  # Longer delay
+        
+        academic_headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://scholar.google.com/',
+            'Cache-Control': 'max-age=0',
+        }
+        
+        response = requests.get(url, headers=academic_headers, timeout=30, verify=False)
+        response.raise_for_status()
+        logger.info("✅ Academic user agent successful!")
+        return response.text
+        
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 403:
+            logger.error("❌ 403 Forbidden - All strategies failed")
+            logger.error("Recommendations:")
+            logger.error("1. Try running the script less frequently (weekly vs daily)")
+            logger.error("2. Check if your GitHub Actions IP is blocked")
+            logger.error("3. Consider using the script from different environments")
+            logger.error("4. Wait a few hours/days before trying again")
+        logger.warning(f"Academic approach failed: {e}")
+    except Exception as e:
+        logger.warning(f"Academic approach failed: {e}")
+    
+    logger.error("❌ All connection strategies failed with 403 errors")
+    logger.info("💡 Try running this script less frequently or from a different IP")
     return None
 
 def get_scholar_stats(scholar_id):
