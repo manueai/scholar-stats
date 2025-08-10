@@ -22,14 +22,8 @@ def load_environment_variables():
     """Load environment variables from .env file or environment"""
     load_dotenv()
     
-    # Required environment variables
-    required_vars = [
-        'PROXY_USERNAME', 
-        'PROXY_PASSWORD',
-        'PROXY_SERVER',
-        'PROXY_PORT',
-        'SCHOLAR_ID'
-    ]
+    # Only Scholar ID required for direct connection approach
+    required_vars = ['SCHOLAR_ID']
     
     # Check if all required variables are set
     missing_vars = [var for var in required_vars if not os.getenv(var)]
@@ -40,46 +34,92 @@ def load_environment_variables():
     return {var: os.getenv(var) for var in required_vars}
 
 def get_html_content(url):
-    """Fetch HTML content using Oxylabs proxy with Session"""
-    env_vars = load_environment_variables()
+    """Fetch HTML content with multiple fallback strategies (no proxy required)"""
     
-    username = env_vars['PROXY_USERNAME']
-    password = env_vars['PROXY_PASSWORD']
-    proxy_server = env_vars['PROXY_SERVER']
-    proxy_port = env_vars['PROXY_PORT']
-    
-    proxy = f"{proxy_server}:{proxy_port}"
-    
-    proxies = {
-        "https": f"https://user-{username}:{password}@{proxy}",
-        "http": f"http://user-{username}:{password}@{proxy}"
-    }
-    
-    # Create a session object for better connection handling
-    session = requests.Session()
-    
-    # Configure session
-    session.proxies.update(proxies)
-    session.headers.update({
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    })
-    
+    # Strategy 1: Try direct connection first (GitHub Actions IPs often work)
     try:
-        logger.info(f"Fetching URL: {url}")
-        
-        # First try with SSL verification disabled
-        session.verify = False
-        response = session.get(url, timeout=30)
+        logger.info("Attempting direct connection (no proxy)")
+        response = requests.get(
+            url,
+            timeout=30,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
+            verify=False
+        )
         response.raise_for_status()
-        logger.info("Successfully fetched with session")
+        logger.info("✅ Direct connection successful!")
         return response.text
         
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error fetching URL {url}: {e}")
-        return None
-    finally:
-        # Always close the session
+    except Exception as e:
+        logger.warning(f"Direct connection failed: {e}")
+    
+    # Strategy 2: Try with different User-Agents and delays
+    user_agents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+    ]
+    
+    for i, ua in enumerate(user_agents):
+        try:
+            logger.info(f"Trying User-Agent {i+1}/{len(user_agents)}: {ua[:50]}...")
+            import time
+            import random
+            time.sleep(random.uniform(2, 5))  # Random delay between attempts
+            
+            response = requests.get(
+                url,
+                timeout=30,
+                headers={
+                    'User-Agent': ua,
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Connection': 'keep-alive',
+                },
+                verify=False
+            )
+            response.raise_for_status()
+            logger.info(f"✅ User-Agent strategy {i+1} successful!")
+            return response.text
+            
+        except Exception as e:
+            logger.warning(f"User-Agent {i+1} failed: {e}")
+            continue
+    
+    # Strategy 3: Try with session and cookies
+    try:
+        logger.info("Trying with session and cookies...")
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+        })
+        session.verify = False
+        
+        # First request to get session cookies
+        session.get('https://scholar.google.com/', timeout=30)
+        import time
+        time.sleep(2)
+        
+        # Second request for actual data
+        response = session.get(url, timeout=30)
+        response.raise_for_status()
         session.close()
+        logger.info("✅ Session with cookies successful!")
+        return response.text
+        
+    except Exception as e:
+        logger.warning(f"Session approach failed: {e}")
+    
+    logger.error("❌ All connection strategies failed")
+    return None
 
 def get_scholar_stats(scholar_id):
     """Get statistics for a Google Scholar profile"""
@@ -369,7 +409,9 @@ def get_scholar_stats(scholar_id):
         scholar_stats = {
             'profile': profile_data,
             'metrics': metrics,
-            'updated_at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'updated_at': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'source': 'direct_connection',
+            'source': 'direct_connection'  # Updated source
         }
         
         return scholar_stats
@@ -423,20 +465,46 @@ def save_json_data(data, filename="data/scholar_stats.json"):
         logger.error(f"File does not exist after saving: {filename}")
 
 def main():
-    """Main function to retrieve Google Scholar stats"""
+    """Main function to retrieve Google Scholar stats using direct connection"""
     try:
         # Load environment variables
         env_vars = load_environment_variables()
         scholar_id = env_vars['SCHOLAR_ID']
         
-        # Get scholar stats
-        logger.info(f"Retrieving stats for Scholar ID: {scholar_id}")
+        # Get scholar stats using direct connection (no proxy needed)
+        logger.info(f"Retrieving stats for Scholar ID: {scholar_id} using direct connection")
         scholar_stats = get_scholar_stats(scholar_id)
         
         if scholar_stats:
             # Save results
             save_json_data(scholar_stats)
             logger.info(f"Successfully retrieved stats for {scholar_stats['profile'].get('name', scholar_id)}")
+            
+            # Print summary for GitHub Actions logs
+            print(f"\n--- Scholar Profile Summary ---")
+            print(f"Name: {scholar_stats['profile'].get('name', 'N/A')}")
+            print(f"Affiliation: {scholar_stats['profile'].get('affiliation', 'N/A')}")
+            print(f"Source: {scholar_stats.get('source', 'unknown')}")
+            
+            citation_stats = scholar_stats['metrics'].get('citation_stats', {})
+            if 'Citations' in citation_stats:
+                citations = citation_stats['Citations']
+                print(f"Total Citations: {citations.get('all', 'N/A')}")
+                for key, value in citations.items():
+                    if key != 'all':
+                        print(f"Citations {key}: {value}")
+            
+            if 'h-index' in citation_stats:
+                h_index = citation_stats['h-index']
+                print(f"h-index: {h_index.get('all', 'N/A')}")
+            
+            if 'i10-index' in citation_stats:
+                i10_index = citation_stats['i10-index']
+                print(f"i10-index: {i10_index.get('all', 'N/A')}")
+                
+            history = scholar_stats['metrics'].get('citation_history', [])
+            print(f"Citation history data points: {len(history)}")
+            
         else:
             logger.error(f"Failed to retrieve stats for Scholar ID: {scholar_id}")
         
